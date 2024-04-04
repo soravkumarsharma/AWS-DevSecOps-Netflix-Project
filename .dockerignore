@@ -1,3 +1,9 @@
 .*
 build
 node_modules
+Jenkinsfile
+buildspec
+lambda-functions
+Kubernetes
+sonar-project.properties
+EKS-Cluster
