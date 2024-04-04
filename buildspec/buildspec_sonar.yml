@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  variables:
+    SONAR_QUBE_PROJECT: "aws-devsecops-netflix-clone"
+  parameter-store:
+    SONAR_QUBE_URL: /netflix-clone/sonarqube-url
+    SONAR_QUBE_KEY: /netflix-clone/sonarqube-token
+
+phases:
+  pre_build:
+    commands:
+      - yum -q install -y jq
+      - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - unzip sonar-scanner-cli-5.0.1.3006-linux
+      - mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+      - chmod -R 775 /opt/sonar-scanner
+      - echo "stage pre_build completed" 
+
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - /opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=$SONAR_QUBE_PROJECT -Dsonar.sources=. -Dproject.settings=sonar-project.properties -Dsonar.host.url=$SONAR_QUBE_URL -Dsonar.login=$SONAR_QUBE_KEY 
+      - echo "build stage completed"
+  
+  post_build:
+    commands:
+      - curl -s -u $SONAR_QUBE_KEY $SONAR_QUBE_URL/api/qualitygates/project_status?projectKey=$SONAR_QUBE_PROJECT > /tmp/sonarqube_scanreport.json
+      - quality_status=$(jq -r '.projectStatus.status' /tmp/sonarqube_scanreport.json)
+      - |
+        if [ $quality_status = "ERROR" ] || [ $quality_status = "WARN" ]; then
+          CODEBUILD_BUILD_SUCCEEDING=0;
+        elif [ $quality_status = "OK" ]; then
+          echo "in quality_status OK condition"
+        else
+          echo "in quality_status  unexpected condition"
+          exit 1;
+        fi
+      - echo Code scan completed on `date`
+
+artifacts:
+  files: '**/*'

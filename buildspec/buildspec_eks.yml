@@ -1,0 +1,37 @@
+version: 0.2
+run-as: root
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: "us-east-1"
+    AWS_CLUSTER_NAME: "netflix-prod" 
+
+phases:
+  install:
+    commands:
+      - echo Installing app dependencies...
+      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-11-02/bin/linux/amd64/kubectl   
+      - chmod +x ./kubectl
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+      - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+      - source ~/.bashrc
+      - echo 'Check kubectl version'
+      - kubectl version --short --client
+
+  pre_build:
+    commands:
+      - echo Logging in to Amazon EKS...
+      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $AWS_CLUSTER_NAME
+      - echo check config
+      - kubectl config view --minify
+
+  build:
+    commands:
+      - kubectl apply -f Kubernetes/deployment.yml
+      - kubectl apply -f Kubernetes/svc.yml
+      - kubectl apply -f Kubernetes/ingress.yml
+      - kubectl rollout restart -f Kubernetes/deployment.yml
+
+  post_build:
+    commands:
+      - echo Build completed on `date`

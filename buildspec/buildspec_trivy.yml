@@ -1,0 +1,50 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: "us-east-1"
+    DOCKER_IMAGE_NAME: "netflix-clone"  
+    DOCKER_IMAGE_TAG: "latest"
+  parameter-store:   
+    AWS_ACCOUNT_ID: /netflix-clone/aws-account-id    
+    TMDB_V3_API_KEY: /netflix-clone/tmdb-api-key
+    
+phases: 
+  install: 
+    commands:
+      - apt-get update
+      - apt-get install -y git python3 python3-pip
+      - pip install awscli
+      - apt-get install -y wget apt-transport-https gnupg lsb-release
+      - wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | tee /usr/share/keyrings/trivy.gpg > /dev/null
+      - echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/trivy.list
+      - apt-get update && apt-get install -y trivy
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - docker build --build-arg TMDB_V3_API_KEY=$TMDB_V3_API_KEY -t $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG .
+  build:
+    commands:
+      - trivy -d image --no-progress --ignore-unfixed --exit-code 0 --severity MEDIUM,LOW --format json -o results.json $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+      - trivy -d image --no-progress --ignore-unfixed --exit-code 0 --severity HIGH,CRITICAL --format json -o results.json $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+      - docker tag $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG
+  post_build:
+    commands:
+      - | 
+        jq "{ \"messageType\": \"CodeScanReport\", \"reportType\": \"TRIVY-IMG-SCAN\", \
+        \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S.%3NZ\"), \"source_repository\": env.CODEBUILD_SOURCE_REPO_URL, \
+        \"source_branch\": env.CODEBUILD_SOURCE_VERSION, \
+        \"build_id\": env.CODEBUILD_BUILD_ID, \
+        \"source_commitid\": env.CODEBUILD_RESOLVED_SOURCE_VERSION, \
+        \"codebuildBuildArn\": env.CODEBUILD_BUILD_ARN, \
+        \"containerName\": env.DOCKER_IMAGE_NAME, \
+        \"containerTag\": env.DOCKER_IMAGE_TAG, \
+        \"report\": . }" results.json > payload.json
+
+      - cat payload.json
+      - cat results.json
+      - aws lambda invoke --function-name ImportVulToSecurityHub --payload fileb://payload.json results.json
+      - echo trivy scan completed on `date`
+artifacts:
+  files: '**/*'

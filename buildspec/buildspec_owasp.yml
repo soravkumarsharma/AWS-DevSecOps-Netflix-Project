@@ -1,0 +1,30 @@
+version: 0.2
+phases: 
+          
+  pre_build:  
+    commands:  
+      - wget https://github.com/jeremylong/DependencyCheck/releases/download/v7.4.0/dependency-check-7.4.0-release.zip
+      - unzip dependency-check-7.4.0-release.zip
+      - rm dependency-check-7.4.0-release.zip
+      - chmod -R 775 $CODEBUILD_SRC_DIR/dependency-check/bin/dependency-check.sh
+      - echo "stage pre_build completed"
+  build:  
+    commands: 
+      - cd $CODEBUILD_SRC_DIR
+      - dependency-check/bin/dependency-check.sh --project "AWS-Netflix-CICD-Project" --format JSON --prettyPrint --enableExperimental --scan . --disableYarnAudit --disableNodeAudit --exclude '$CODEBUILD_SRC_DIR/depedency-check/'
+      - echo "OWASP dependency check analysis status is completed..."; 
+  post_build:
+    commands:
+      - | 
+        jq "{ \"messageType\": \"CodeScanReport\", \"reportType\": \"OWASP-Dependency-Check\", \
+        \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S.%3NZ\"), \"source_repository\": env.CODEBUILD_SOURCE_REPO_URL, \
+        \"source_branch\": env.CODEBUILD_SOURCE_VERSION, \
+        \"build_id\": env.CODEBUILD_BUILD_ID, \
+        \"source_commitid\": env.CODEBUILD_RESOLVED_SOURCE_VERSION, \
+        \"report\": . }" dependency-check-report.json > payload.json  
+
+      - aws lambda invoke --function-name ImportVulToSecurityHub --payload fileb://payload.json dependency-check-report.json
+
+artifacts:
+  type: zip
+  files: '**/*'
