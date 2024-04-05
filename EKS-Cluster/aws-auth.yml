@@ -3,7 +3,7 @@ data:
   mapRoles: |
     - groups:
       - system:masters
-      rolearn: arn:aws:iam:::role/AWS-DevSecOps-Netflix-CB-Role
+      rolearn: arn:aws:iam::898855110204:role/AWS-DevSecOps-Netflix-CB-Role
       username: AWSDevSecOpsNetflixCBRole
 kind: ConfigMap
 metadata:
