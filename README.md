@@ -3,10 +3,10 @@
     <img src="./public/assets/netflix-logo.png" alt="Logo" width="100" height="32">
   </a>
 
-  <h3 align="center">[AWS DevSecOps Netflix Clone](https://soravks.hashnode.dev/mastering-cloud-security-insights-from-the-aws-devsecops-netflix-project)</h3>
+  <h3 align="center">AWS DevSecOps Netflix Clone</h3>
 
 </div>
-![Untitled Diagram (4)](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/d5fc811a-d6ff-4076-ab99-20eec23ef496)
+
 
 <br />
 
@@ -22,5 +22,7 @@
   <img src="./public/assets/watch.png" alt="Logo" width="100%" height="100%">
   <p align="center">Watch Page with customer contol bar</p>
 </div>
+
+![Untitled Diagram (4)](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/5a224325-f48b-41fb-b391-45db59ca8ddb)
 
 
