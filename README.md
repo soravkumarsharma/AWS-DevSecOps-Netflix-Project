@@ -3,11 +3,11 @@
   <a href="http://netflix-clone-with-tmdb-using-react-mui.vercel.app/">
     <img src="./public/assets/netflix-logo.png" alt="Logo" width="100" height="32">
   </a>
-
   <h3 align="center">AWS DevSecOps Netflix Clone</h3>
+[Detailed Blog](https://soravks.hashnode.dev/mastering-cloud-security-insights-from-the-aws-devsecops-netflix-project)
 </div>
 
-[Detailed Blog](https://soravks.hashnode.dev/mastering-cloud-security-insights-from-the-aws-devsecops-netflix-project)
+
 
 ![Untitled Diagram (4)](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/5a224325-f48b-41fb-b391-45db59ca8ddb)
 
