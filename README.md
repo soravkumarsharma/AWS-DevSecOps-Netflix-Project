@@ -1,4 +1,3 @@
-![Untitled Diagram (4)](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/5a224325-f48b-41fb-b391-45db59ca8ddb)
 
 <div align="center">
   <a href="http://netflix-clone-with-tmdb-using-react-mui.vercel.app/">
@@ -9,6 +8,7 @@
 
 </div>
 
+![Untitled Diagram (4)](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/5a224325-f48b-41fb-b391-45db59ca8ddb)
 
 <br />
 
