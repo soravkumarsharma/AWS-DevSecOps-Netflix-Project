@@ -7,7 +7,9 @@
 </div>
 
 <div align="center">
+  
 [Detailed Blog](https://soravks.hashnode.dev/mastering-cloud-security-insights-from-the-aws-devsecops-netflix-project)
+
 </div>
 
 
