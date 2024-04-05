@@ -13,7 +13,8 @@
 </div>
 
 
-![Untitled Diagram (4)](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/5a224325-f48b-41fb-b391-45db59ca8ddb)
+![Untitled Diagram](https://github.com/soravkumarsharma/AWS-DevSecOps-Netflix-Project/assets/77971771/a6396f8e-0112-494c-a047-78efb73d8159)
+
 
 <br />
 
