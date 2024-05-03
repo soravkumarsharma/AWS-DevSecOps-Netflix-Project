@@ -1,6 +1,6 @@
 
 <div align="center">
-  <a href="https://www.linkedin.com/in/soravkumarsharma/" target="_blank">
+  <a href="https://www.linkedin.com/in/soravkumarsharma/">
     <img src="./public/assets/netflix-logo.png" alt="Logo" width="100" height="32">
   </a>
   <h3 align="center">AWS DevSecOps Netflix Clone</h3>
